@@ -124,10 +124,22 @@ A safe, personal environment where I practice real-world security and networking
 </div>
 
 **What I practiced:**
-- Virtual machine setup and management `[add your hypervisor, e.g. VirtualBox / VMware / Proxmox]`
-- Network segmentation and firewall configuration `[add specifics, e.g. pfSense / iptables / VLANs]`
-- Penetration testing exercises against my own systems `[add tools you used, e.g. Nmap / Metasploit / Kali Linux]`
-- `[Add one specific exercise you completed, e.g. "scanned and exploited an intentionally vulnerable VM, then wrote up the findings"]`
+- **Virtual machine setup and management:** run a `Proxmox VE` homelab of **11 VMs and LXC containers** (Docker host, Wazuh SIEM, Kali, a vulnerable target, Pi-hole, Caddy, Vaultwarden)
+  - Organized with resource pools and weekly `vzdump` backups to a separate disk
+  - Used **snapshot and rollback**: the lab target resets to a clean snapshot after each round
+- **Network segmentation and firewall configuration:** built an **isolated attack network** on its own Proxmox bridge (`vmbr1`) with no uplink, gateway, or NAT
+  - Per-VM Proxmox firewall rules limit Kali to the target only, and the target can reach only the Wazuh agent ports
+  - **Proved the isolation with 11 of 11 tests**, including trying to route through the machines connected to both networks
+  - Nothing is port-forwarded on the router: outside access goes through `Cloudflare Tunnel` and `Authentik` SSO with MFA, and admin access goes through `Twingate`
+- **Penetration testing against my own systems:** used `Kali Linux` (`Nmap`, `Nikto`, `Burp Suite`, SQL injection, `Hydra`) against `DVWA` and `OWASP Juice Shop`, and watched for detection in `Wazuh` with `Suricata` IDS and `auditd`
+- **Full red team / blue team exercise:**
+```text
+RED TEAM  : Nmap + Nikto scan of the target → SQL injection from Kali
+BLUE TEAM : confirm the matching Wazuh + Suricata alerts → investigate on the target's shell
+RESET     : restore the target to a clean snapshot
+```
+ 
+  I also wrote a **shared playbook with an incident write-up template**.
 
 **Outcome:** A working lab that gives me continued hands-on practice with the same tools and techniques used in cybersecurity roles.
 
